@@ -2,7 +2,7 @@
 Allows user to specify different sources of reactor neutrino isotope fluxes and a list of weights, and generates an output neutrino spectrum. Still in beta...
 
 # Usage:
-python reactorNuSpectrumGeneratory.py <config file>
+python reactorNuSpectrumGeneratory.py < config file >
 
 # Explanation of config file
 ## spectrum_settings
