@@ -35,7 +35,7 @@ headings=["spectrum_settings","data_sources","reactor_data","output_settings"]
 subHeadings=[
   ["nbins","normalized","emin","emax"],
   ["u235","u238","pu239","pu241"],
-  ["type","power","fractions"],
+  ["type","power","fraction_u235","fraction_u238","fraction_pu239","fraction_pu241"],
   ["format","output_name"]
 ]
 for i,heading in enumerate(headings):
@@ -62,10 +62,10 @@ if data["output_settings"]["format"]=="root":
 #####################################################
 #Loads energies and neutrinos/fission from text file#
 #####################################################
-def loadSpectrum(isotope,source):
+def loadSpectrum(filename):
   energies=[]
   reactorData=[]
-  fname = source+"_"+isotope+".txt"
+  fname = filename
   if os.path.isdir("fluxData"):
     if os.path.exists("fluxData/"+fname):
       for line in open("fluxData/"+fname):
@@ -119,7 +119,7 @@ def fillInData(energies,data,desired_energies):
       dataVal=numpy.sum(dataToSum)
     elif desired_energy > numpy.amax(energies):
       dataToSum=[highCoeffs[i]*math.pow(desired_energy,i) for i in range(0,len(highCoeffs))]
-      dataVal=numpy.sum(dataToSum[0])
+      dataVal=numpy.sum(dataToSum)
     elif desired_energy in energies:
       idx=numpy.where(energies == desired_energy)
       dataVal=data[idx][0]
@@ -127,11 +127,10 @@ def fillInData(energies,data,desired_energies):
       dataVal=f(desired_energy)
     
     #Make sure we don't have negative flux
-    if dataVal>0:
-      newData.append(dataVal)
-    else:
-      newData.append(0.)
-    
+    if dataVal<0:
+      dataVal=0
+    newData.append(dataVal)
+
   newData_arr=numpy.array(newData)
   return newData_arr
 
@@ -152,7 +151,7 @@ def makeSpectrum(energies,dataSets,fractions):
 #Write the spectrum to a Root file#
 ###################################
 def makeRootFile(energies,spectrum,yaxisTitle):
-  print("Making root file "+data["output_settings"]["output_name"])
+  print("\nMaking root file "+data["output_settings"]["output_name"])
   outFile=ROOT.TFile(data["output_settings"]["output_name"],"RECREATE")
   hist=ROOT.TH1D("hist","Spectrum;Energy (MeV);"+yaxisTitle,nbins,numpy.min(energies),numpy.max(energies))
   for i,energy in enumerate(energies):
@@ -177,7 +176,7 @@ def makeRootFile(energies,spectrum,yaxisTitle):
 #Write the spectrum to a text file#
 ###################################
 def makeTextFile(energies,spectrum):
-  print("Making text file "+data["output_settings"]["output_name"])
+  print("\nMaking text file "+data["output_settings"]["output_name"])
   outFile=open(data["output_settings"]["output_name"],"w")
   for i,energy in enumerate(energies):
     line="{0:.3f}".format(energy)+","+'{0:.6f}'.format(spectrum[i])
@@ -196,29 +195,28 @@ nbins=data["spectrum_settings"]["nbins"]
 energies = numpy.linspace(emin,emax,nbins)
 
 #Load and normalize fractions
-fractions=data["reactor_data"]["fractions"]
+fractions=[]
+fractions.append(data["reactor_data"]["fraction_u235"])
+fractions.append(data["reactor_data"]["fraction_u238"])
+fractions.append(data["reactor_data"]["fraction_pu239"])
+fractions.append(data["reactor_data"]["fraction_pu241"])
 fractionSum=sum(fractions)
 fractions_arr=numpy.array([i/float(fractionSum) for i in fractions])
 
 #Load data sets
 dataEnergies=[]
 dataSets=[]
-dataSources=data["data_sources"]
-for i,source in enumerate(dataSources):
-  isotope=subHeadings[1][i]
-  dataEnergy,dataSet = loadSpectrum(isotope,dataSources[isotope])
-  dataEnergies.append(dataEnergy)
-  dataSets.append(dataSet)
+isotopes=subHeadings[1]
+for isotope in isotopes:
+  print("Loading "+str(data["data_sources"][isotope]))
+  dataEnergy,dataSet = loadSpectrum(data["data_sources"][isotope])
   if fractions_arr[i] > 0:
     if numpy.amin(dataEnergy) > emin or numpy.amax(dataEnergy) < emax:
-      print("\nData set "+dataSources[isotope]+"_"+isotope+".txt has range of ("
+      print("\nData set "+str(data["data_sources"][isotope])+" has range of ("
         +str(numpy.amin(dataEnergy))+","+str(numpy.amax(dataEnergy))+
-        ", does not cover requested energy range of ("+str(emin)+","+str(emax)+")!")
-      print("Extrapolating, results may not be reliable!!!\n")
-
-#Get data at desired energies
-for i in range(0,len(dataSets)):
-  dataSets[i]=fillInData(dataEnergies[i],dataSets[i],energies)
+        "), does not cover requested energy range of ("+str(emin)+","+str(emax)+")")
+      print("Extrapolating, results may not be reliable!\n")
+  dataSets.append(fillInData(dataEnergy,dataSet,energies))
 
 #Make spectrum
 spectrum = makeSpectrum(energies,dataSets,fractions_arr)
