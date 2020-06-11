@@ -1,5 +1,5 @@
 # reactorNuSpectrumGenerator
-Allows user to specify different sources of reactor neutrino isotope fluxes and a list of weights, and generates an output neutrino spectrum. Not fully tested.
+Allows user to specify different sources of reactor neutrino isotope fluxes and a list of weights, and generates an output neutrino spectrum. Still in beta...
 
 # Usage:
 python reactorNuSpectrumGeneratory.py <config file>
