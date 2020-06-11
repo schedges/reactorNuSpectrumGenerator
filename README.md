@@ -12,13 +12,15 @@ python reactorNuSpectrumGeneratory.py <config file>
 * emax: maximum energy of output spectrum
 
 ## data_sources
-* For each isotope, argument to use as a data source, expects file with name <arg>_<isotope>.txt in the fluxData folder with a format of energy,nu/fission. Comments start with a "#". Currently does linear extrapolation using lowest/highest four data points if requested range with emin,emax not included in supplied data
+* For each isotope, filename to use from fluxData folder. Format of data is energy, nu/fission. Comments start with a "#". If data does not cover requested (emin,emax) range, linear extrapolation is done using four closest data points.
   
 ## reactor_data
 * type: "manual" currently, plan to put in example reactor data later
 * power: power in GW
-* isotopes: list of isotopes
-* fractions: fraction of each isotope, normalization done automatically
+* fraction_u235: fraction of u235 in core, does not have to be normalized
+* fraction_u238: fraction of u238 in core, does not have to be normalized
+* fraction_pu239: fraction of pu239 in core, does not have to be normalized
+* fraction_pu241: fraction of pu241 in core, does not have to be normalized
 
 ## output_settings:
 * format: either "text" or "root"
