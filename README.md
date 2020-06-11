@@ -12,8 +12,8 @@ python reactorNuSpectrumGeneratory.py <config file>
 * emax: maximum energy of output spectrum
 
 ## data_sources
-* For each isotope, argument to use as a data source, expects file with name <arg>_<isotope>.txt in the fluxData folder with a format of energy,nu/fission. Comments start with a "#"
-
+* For each isotope, argument to use as a data source, expects file with name <arg>_<isotope>.txt in the fluxData folder with a format of energy,nu/fission. Comments start with a "#". Currently does linear extrapolation using lowest/highest four data points if requested range with emin,emax not included in supplied data
+  
 ## reactor_data
 * type: "manual" currently, plan to put in example reactor data later
 * power: power in GW
