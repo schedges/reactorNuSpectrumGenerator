@@ -12,7 +12,7 @@ python reactorNuSpectrumGeneratory.py < config file >
 * emax: maximum energy of output spectrum
 
 ## data_sources
-* For each isotope, filename to use from fluxData folder. Format of data is lines of "energy [in MeV], antineutrinos/fission". Comments start with a "#". If data does not cover requested (emin,emax) range, linear extrapolation is done using four closest data points.
+* For each isotope, filename to use from fluxData folder. Format of data is lines of "energy [in MeV], antineutrinos/fission". Comments start with a "#". If data does not cover requested (emin,emax) range, exponential extrapolation is done using five closest data points.
   
 ## reactor_data
 * type: "manual" currently, plan to put in example reactor data later
