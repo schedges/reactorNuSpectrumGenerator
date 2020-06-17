@@ -102,7 +102,7 @@ def fillInData(energies,data,desired_energies):
   rev_lowCoeffs=numpy.polyfit(lowEnergies,lowData,1)
   lowCoeffs=rev_lowCoeffs[::-1]
   
-  #Do linear fit to upper 5 data points
+  #Do linear fit to upper 4 data points
   highEnergies=energies[-4:]
   highData=data[-4:]
   rev_highCoeffs=numpy.polyfit(highEnergies,highData,1)
