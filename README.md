@@ -2,6 +2,7 @@
 Allows user to specify different sources of reactor neutrino isotope fluxes calculations, weights, and energy range, and generates an output neutrino spectrum. Still a work in progress. Things to change are:
 * Improve or give the user extrapolation options
 * Include errors authors use in calculations. More difficult when data extracted from curves.
+* Add power, core content data from real reactors
 
 # Usage:
 python reactorNuSpectrumGeneratory.py < config file >
