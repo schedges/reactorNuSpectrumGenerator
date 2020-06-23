@@ -96,22 +96,16 @@ def fillInData(energies,data,desired_energies):
   nDataPointsToFit=5
   #Do linear fit to lowest four data points
   if len(energies) < nDataPointsToFit:
-    print("\nLess than 4 data points requested, extrapolation routine will fail! Exiting\n")
+    print("\nLess than "+str(nDataPointsToFit)+" data points available, extrapolation routine will fail! Exiting\n")
     sys.exit()
   lowEnergies=energies[0:nDataPointsToFit]
   lowData=logData[0:nDataPointsToFit]
   rev_lowCoeffs=numpy.polyfit(lowEnergies,lowData,1)
   lowCoeffs=rev_lowCoeffs[::-1]
   
-<<<<<<< HEAD
   #Do linear fit to upper 5 data points
   highEnergies=energies[-1*nDataPointsToFit:]
   highData=logData[-1*nDataPointsToFit:]
-=======
-  #Do linear fit to upper 4 data points
-  highEnergies=energies[-4:]
-  highData=data[-4:]
->>>>>>> 403562bbc90c0ee29d1a054aea89d30d36afe871
   rev_highCoeffs=numpy.polyfit(highEnergies,highData,1)
   highCoeffs=rev_highCoeffs[::-1]
   
@@ -215,10 +209,11 @@ dataEnergies=[]
 dataSets=[]
 isotopes=subHeadings[1]
 for isotope in isotopes:
-  print("\nLoading "+str(data["data_sources"][isotope]))
+  print("\nLoading "+str(data["data_sources"][isotope])+"...")
   dataEnergy,dataSet = loadSpectrum(data["data_sources"][isotope])
   if fractions_arr[i] > 0:
     if numpy.amin(dataEnergy) > emin or numpy.amax(dataEnergy) < emax:
+      print("%%%%%%%%%%%%%%%%\n%%%%WARNING!%%%%\n%%%%%%%%%%%%%%%%")
       print("Data set "+str(data["data_sources"][isotope])+" has range of ("
         +str(numpy.amin(dataEnergy))+","+str(numpy.amax(dataEnergy))+
         "), does not cover requested energy range of ("+str(emin)+","+str(emax)+")")
@@ -234,17 +229,22 @@ if data["spectrum_settings"]["normalized"]=="pdf":
   spectrum=[i/float(spectrumSum) for i in spectrum]
   yaxisTitle="Normalized Counts"
 elif data["spectrum_settings"]["normalized"]=="GW":
+  #Calculate number of fissions
   power=data["reactor_data"]["power"]
   fissionsPerW=3.1*math.pow(10,10)
   fissionsPerGW=fissionsPerW*math.pow(10,9)
-  spectrum=fissionsPerGW*spectrum
-  yaxisTitle="Neutrinos"
+  totalFissions=fissionsPerGW*power
+  #Normalize spectrum so total counts adds up to 1
+  spectrumSum=sum(spectrum)
+  spectrum=[i/float(spectrumSum) for i in spectrum]
+  #Scale so total spectrum adds up to totalFissions
+  spectrum=[totalFissions*i for i in spectrum]
+  yaxisTitle="Neutrinos/"+str(power)+" GW"
 else:
-  yaxisTitle="Neutrinos/fission"
+  yaxisTitle="Neutrinos/fission/MeV"
 
 #Make output
 if useROOT==1:
   makeRootFile(energies,spectrum,yaxisTitle)
 else:
   makeTextFile(energies,spectrum)
-
