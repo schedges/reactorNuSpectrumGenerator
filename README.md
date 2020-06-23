@@ -1,5 +1,5 @@
 # reactorNuSpectrumGenerator
-Allows user to specify different sources of reactor neutrino isotope fluxes and a list of weights, and generates an output neutrino spectrum. Still in beta...
+Allows user to specify different sources of reactor neutrino isotope fluxes calculations, weights, and energy range, and generates an output neutrino spectrum. Still a work in progress, notable I want to improve or give the user extrapolation options.
 
 # Usage:
 python reactorNuSpectrumGeneratory.py < config file >
@@ -25,3 +25,11 @@ python reactorNuSpectrumGeneratory.py < config file >
 ## output_settings:
 * format: either "text" or "root"
 * output_name: name of the output file, with appropriate extension
+
+# Data references
+* Hayes calculations: https://arxiv.org/abs/1605.02047
+* Huber calculations: https://arxiv.org/pdf/1106.0687.pdf
+* Klapdor Pu239 calculations: https://journals.aps.org/prl/abstract/10.1103/PhysRevLett.48.127
+* Klapdor U235 calculations: https://www.sciencedirect.com/science/article/pii/0370269382908978
+* Mueller calculations: https://arxiv.org/pdf/1101.2663.pdf
+* Avignone calculation: https://journals.aps.org/prc/pdf/10.1103/PhysRevC.22.594
