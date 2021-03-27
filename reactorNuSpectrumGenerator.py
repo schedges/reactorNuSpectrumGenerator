@@ -68,6 +68,7 @@ def loadSpectrum(filename):
   fname = filename
   if os.path.isdir("fluxData"):
     if os.path.exists("fluxData/"+fname):
+      print(fname)
       for line in open("fluxData/"+fname):
         if not line.startswith("#"):
           line=line.strip("\n")
@@ -145,6 +146,8 @@ def makeSpectrum(energies,dataSets,fractions):
   for i,fraction in enumerate(fractions):
     dataSets[i] = dataSets[i]*fraction
     spectrum=numpy.add(spectrum,dataSets[i])
+  #Normalize by bin size so sums to neutrinos/fission
+  spectrum=[i*estep for i in spectrum]
   #Return combined spectrum
   return spectrum
 
@@ -184,6 +187,17 @@ def makeTextFile(energies,spectrum):
     if i != len(energies)-1:
       line=line+"\n"
     outFile.write(line)
+  line=""
+  for i,energy in enumerate(energies):
+    line+="{:.2f},".format(energy)
+  print(line)
+  line=""
+  sum=0
+  for i,binContent in enumerate(spectrum):
+    line+="{:.3e},".format(binContent*estep)
+    sum+=binContent
+  print(line)
+  print("Total neutrinos/sec: "+str(sum))
   outFile.close()
 
 ###########
@@ -234,9 +248,6 @@ elif data["spectrum_settings"]["normalized"]=="GW":
   fissionsPerW=3.1*math.pow(10,10)
   fissionsPerGW=fissionsPerW*math.pow(10,9)
   totalFissions=fissionsPerGW*power
-  #Normalize spectrum so total counts adds up to 1
-  spectrumSum=sum(spectrum)
-  spectrum=[i/float(spectrumSum) for i in spectrum]
   #Scale so total spectrum adds up to totalFissions
   spectrum=[totalFissions*i for i in spectrum]
   yaxisTitle="Neutrinos/"+str(power)+" GW"
